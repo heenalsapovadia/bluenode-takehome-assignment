@@ -68,7 +68,7 @@ class DataValidator ():
         header = ["Section","Sub-Section","Given DataType","Expected DataType","Given Length","Expected MaxLength","Error Code"]
 
         # Writing to report csv file
-        with open('./output/csv_file.csv', 'w', encoding='UTF8', newline='') as f:
+        with open('./output/report.csv', 'w', encoding='UTF8', newline='') as f:
             writer = csv.writer(f)
             writer.writerow(header)
             writer.writerows(report_data)
