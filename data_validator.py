@@ -1,4 +1,5 @@
 import os.path
+import logging
 
 from validations import *
 from file_ops import *
@@ -7,12 +8,16 @@ from config import *
 class DataValidator:
 
     def __init__(self):
+        logging.basicConfig(level = LOGGING_LEVEL)
+
         # Loading jsons into dictionary
         self.def_dict = load_json(STANDARD_DEFINITIONS_FILE, 'key', 'sub_sections')
         self.err_dict = load_json(ERROR_CODES_FILE, 'code', 'message_template')
+        logging.info("JSON files loaded")
 
         # Loading Input data
         self.input = load_input(INPUT_FILE)
+        logging.info("INPUT file loaded")
 
     def create_summary_record (self, message_template, sub_section, section, data_type, max_length) :
         return message_template.replace("LXY", sub_section).replace("LX", section).replace("{", "").replace("}", "").replace("data_type", data_type).replace("max_length", str(max_length))
@@ -78,19 +83,24 @@ class DataValidator:
     def main(self):
         
         report_data, summary_lines = self.validate_data()
+        logging.info("Completed Data Validation")
 
         # Constructing the output file path
         if not os.path.isdir(OUTPUT_DIR):
-            os.mkdir(os.path.join(os.getcwd(), OUTPUT_DIR))
+            output_dir = os.path.join(os.getcwd(), OUTPUT_DIR)
+            logging.info("Creating the OUTPUT DIRECTORY at : %s", output_dir)
+            os.mkdir(output_dir)
         output_dir_path = os.path.join(os.getcwd(), OUTPUT_DIR)
 
         # Writing to report csv file
         output_report_csv_file_path = os.path.join(output_dir_path, OUTPUT_REPORT_CSV_FILE)
         generate_output_report_csv(output_report_csv_file_path, report_data)
+        logging.info("Output Report CSV generated at : %s", output_report_csv_file_path)
 
         # Writing to summary text file
         output_summary_txt_file_path = os.path.join(output_dir_path, OUTPUT_SUMMARY_TEXT_FILE)
         generate_output_summary_text(output_summary_txt_file_path, summary_lines)
+        logging.info("Output Summary text generated at : %s", output_summary_txt_file_path)
 
 if __name__=='__main__':
     data_validator = DataValidator()
