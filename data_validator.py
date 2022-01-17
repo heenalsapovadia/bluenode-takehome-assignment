@@ -21,6 +21,9 @@ class DataValidator ():
                 continue
             sections = line.split("&")
             l = sections[0]
+
+            if l not in def_dict:
+                continue
             rules = def_dict[l]
             summary_line = ""
 
