@@ -55,7 +55,7 @@ class DataValidator ():
 
                 # Fetching validation values for the input
                 dtCheck, given_dt = dataTypeCheck(data_type, section)
-                maxLCheck = False if (len(section)==0) else maxLengthCheck(max_length, section)
+                maxLCheck = maxLengthCheck(max_length, section)
                 err_code = findErrorCode(dtCheck, maxLCheck)
                 
                 # Creating the csv record for current rule and section
