@@ -10,13 +10,15 @@ class DataValidator ():
         err_dict = load_json('error_codes.json', 'code', 'message_template')
 
         # Loading Input data
-        lines = load_input('input_file.txt')
+        lines = load_input('test_input_file.txt')
 
         report_data = []
         summary_lines = []
 
         # Iterating over the input file data line by line
         for line in lines:
+            if len(line) == 0:
+                continue
             sections = line.split("&")
             l = sections[0]
             rules = def_dict[l]
