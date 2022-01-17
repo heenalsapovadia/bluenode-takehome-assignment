@@ -1,36 +1,42 @@
-import csv
+import os.path
 
 from validations import *
 from file_ops import *
+from config import *
 
-class DataValidator ():
-    def main():
+class DataValidator:
+
+    def __init__(self):
         # Loading jsons into dictionary
-        def_dict = load_json('standard_definition.json', 'key', 'sub_sections')
-        err_dict = load_json('error_codes.json', 'code', 'message_template')
+        self.def_dict = load_json(STANDARD_DEFINITIONS_FILE, 'key', 'sub_sections')
+        self.err_dict = load_json(ERROR_CODES_FILE, 'code', 'message_template')
 
         # Loading Input data
-        lines = load_input('test_input_file.txt')
+        self.input = load_input(INPUT_FILE)
 
+    def create_summary_record (self, message_template, sub_section, section, data_type, max_length) :
+        return message_template.replace("LXY", sub_section).replace("LX", section).replace("{", "").replace("}", "").replace("data_type", data_type).replace("max_length", str(max_length))
+
+    def validate_data (self):
         report_data = []
         summary_lines = []
 
         # Iterating over the input file data line by line
-        for line in lines:
+        for line in self.input:
             if len(line) == 0:
                 continue
             sections = line.split("&")
-            l = sections[0]
+            section = sections[0]
 
-            if l not in def_dict:
+            if section not in self.def_dict:
                 continue
-            rules = def_dict[l]
+            rules = self.def_dict[section]
             summary_line = ""
 
             # Iterating over all the rules for the section
             for r in range(0, len(rules)):
                 rule = rules[r]
-                sub_section = rule['key']
+                sub_section_key = rule['key']
                 data_type = rule['data_type']
                 max_length = int(rule['max_length'])
                 err_code = ''
@@ -41,46 +47,51 @@ class DataValidator ():
                     err_code = 'E05'
             
                     # Creating the csv record for current rule and section
-                    report_data.append([l,sub_section,given_dt,data_type,'',str(max_length),err_code])
-                    msg_template = err_dict[err_code]
+                    report_data.append([section,sub_section_key,given_dt,data_type,'',str(max_length),err_code])
+                    msg_template = self.err_dict[err_code]
 
                     # Creating the summary record for current rule and section
-                    summary_line = msg_template.replace("LXY", sub_section).replace("LX", l).replace("{", "").replace("}", "").replace("data_type", data_type).replace("max_length", str(max_length))
+                    summary_line = self.create_summary_record(msg_template, sub_section_key, section, data_type, max_length)
                     if r == len(rules)-1:
                         summary_line = summary_line + "\n"
                     summary_lines.append(summary_line)
                     continue
 
-                section = sections[r+1]
+                sub_section = sections[r+1]
 
                 # Fetching validation values for the input
-                dtCheck, given_dt = dataTypeCheck(data_type, section)
-                maxLCheck = maxLengthCheck(max_length, section)
+                dtCheck, given_dt = dataTypeCheck(data_type, sub_section)
+                maxLCheck = maxLengthCheck(max_length, sub_section)
                 err_code = findErrorCode(dtCheck, maxLCheck)
                 
                 # Creating the csv record for current rule and section
-                section_len_str = "" if (len(section)==0) else str(len(section))
-                report_data.append([l,sub_section,given_dt,data_type,str(len(section)),str(max_length),err_code])
-                msg_template = err_dict[err_code]
+                report_data.append([section,sub_section_key,given_dt,data_type,str(len(section)),str(max_length),err_code])
+                msg_template = self.err_dict[err_code]
 
                 # Creating the summary record for current rule and section
-                summary_line = msg_template.replace("LXY", sub_section).replace("LX", l).replace("{", "").replace("}", "").replace("data_type", data_type).replace("max_length", str(max_length))
+                summary_line = self.create_summary_record(msg_template, sub_section_key, section, data_type, max_length)
                 if r == len(rules)-1:
                     summary_line = summary_line + "\n"
                 summary_lines.append(summary_line)
+        return report_data, summary_lines
 
-        # Header containing the columns for the report csv file
-        header = ["Section","Sub-Section","Given DataType","Expected DataType","Given Length","Expected MaxLength","Error Code"]
+    def main(self):
+        
+        report_data, summary_lines = self.validate_data()
+
+        # Constructing the output file path
+        if not os.path.isdir(OUTPUT_DIR):
+            os.mkdir(os.path.join(os.getcwd(), OUTPUT_DIR))
+        output_dir_path = os.path.join(os.getcwd(), OUTPUT_DIR)
 
         # Writing to report csv file
-        with open('./output/report.csv', 'w', encoding='UTF8', newline='') as f:
-            writer = csv.writer(f)
-            writer.writerow(header)
-            writer.writerows(report_data)
+        output_report_csv_file_path = os.path.join(output_dir_path, OUTPUT_REPORT_CSV_FILE)
+        generate_output_report_csv(output_report_csv_file_path, report_data)
 
         # Writing to summary text file
-        with open('./output/summary.txt', 'w') as f:
-            f.write('\n'.join(summary_lines))
+        output_summary_txt_file_path = os.path.join(output_dir_path, OUTPUT_SUMMARY_TEXT_FILE)
+        generate_output_summary_text(output_summary_txt_file_path, summary_lines)
 
 if __name__=='__main__':
-    DataValidator.main()
+    data_validator = DataValidator()
+    data_validator.main()
