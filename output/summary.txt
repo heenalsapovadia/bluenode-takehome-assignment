@@ -15,4 +15,4 @@ L31 field under section L3 fails the data type (expected: word_characters) valid
 L41 field under section L4 fails all the validation criteria.
 L42 field under section L4 fails the max length (expected: 6) validation, however it passes the data type (digits) validation
 
-L31 field under section L3 fails the data type (expected: word_characters) validation, however it passes the max length (1) validation
+L31 field under section L3 fails all the validation criteria.

@@ -4,7 +4,7 @@
 # Validation function to check the data_type and return the data type of the given input string
 def dataTypeCheck (exp_dtype, string) :
     string = string.replace(" ", "")
-    string_type = 'digits' if string.isdigit() else 'word_characters' if string.isalpha() else ''
+    string_type = 'digits' if string.isdigit() else 'word_characters' if string.isalpha() else 'others'
     digits = string.isdigit() and (exp_dtype == 'digits')
     chars = string.isalpha() and (exp_dtype == 'word_characters')
     if digits or chars:

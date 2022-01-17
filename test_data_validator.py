@@ -15,7 +15,7 @@ class TestValidations (unittest.TestCase):
     def test_dataTypeCheck_word_false_other (self):
         a,b = dataTypeCheck("word_characters", "aR#$")
         self.assertEqual(a, False)
-        self.assertEqual(b, "")
+        self.assertEqual(b, "others")
 
     def test_dataTypeCheck_digit_true_digit (self):
         a,b = dataTypeCheck("digits", "123")
@@ -30,7 +30,7 @@ class TestValidations (unittest.TestCase):
     def test_dataTypeCheck_digit_false_other (self):
         a,b = dataTypeCheck("digits", "123.#")
         self.assertEqual(a, False)
-        self.assertEqual(b, "")
+        self.assertEqual(b, "others")
 
     def test_maxLengthCheck_True (self):
         a = maxLengthCheck(3, "aZa")
