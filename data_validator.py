@@ -60,7 +60,7 @@ class DataValidator ():
                 
                 # Creating the csv record for current rule and section
                 section_len_str = "" if (len(section)==0) else str(len(section))
-                report_data.append([l,sub_section,given_dt,data_type,section_len_str,str(max_length),err_code])
+                report_data.append([l,sub_section,given_dt,data_type,str(len(section)),str(max_length),err_code])
                 msg_template = err_dict[err_code]
 
                 # Creating the summary record for current rule and section
