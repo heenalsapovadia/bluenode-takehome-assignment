@@ -11,7 +11,7 @@ STANDARD_DEFINITIONS_FILE = "standard_definition.json"
 ERROR_CODES_FILE = "error_codes.json"
 
 # Output files
-OUTPUT_DIR = "out"
+OUTPUT_DIR = "output"
 OUTPUT_REPORT_CSV_FILE = "report.csv"
 OUTPUT_SUMMARY_TEXT_FILE = "summary.txt"
 

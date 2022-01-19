@@ -70,7 +70,7 @@ class DataValidator:
                 err_code = findErrorCode(dtCheck, maxLCheck)
                 
                 # Creating the csv record for current rule and section
-                report_data.append([section,sub_section_key,given_dt,data_type,str(len(section)),str(max_length),err_code])
+                report_data.append([section,sub_section_key,given_dt,data_type,str(len(sub_section)),str(max_length),err_code])
                 msg_template = self.err_dict[err_code]
 
                 # Creating the summary record for current rule and section
